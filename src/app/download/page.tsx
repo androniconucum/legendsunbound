@@ -29,7 +29,7 @@ export default function DownloadPage() {
             Version 1.0.0 (APK)
           </p>
           <a
-            href="https://drive.google.com/file/d/1p0QPnDJ4kkPQ2MISyWu9YpQMKoLhQuUq/view?usp=sharing"
+            href="https://drive.google.com/file/d/1BeoUsLfUKrlo_jnmJSGHppZYqrSM0yZK/view?usp=sharing"
             className="btn btn-primary w-full mb-4"
             download
           >
