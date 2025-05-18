@@ -30,22 +30,18 @@ export default function AboutPage() {
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center">
             <img src="/gallery/nico.jpg" alt="Nico - Lead Developer" className="w-32 h-32 md:w-40 md:h-40 mb-6 object-cover rounded-full" />
             <h3 className="text-xl font-bold text-white">Nico</h3>
-            <p className="text-gray-400 mt-2">Lead Developer</p>
           </div>
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center">
             <img src="/gallery/aaron.jpg" alt="Aaron - Pixel Artist" className="w-32 h-32 md:w-40 md:h-40 mb-6 object-cover rounded-full" />
             <h3 className="text-xl font-bold text-white">Aaron</h3>
-            <p className="text-gray-400 mt-2">Pixel Artist</p>
           </div>
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center">
             <img src="/gallery/jenny.jpg" alt="Jenny - Game Designer" className="w-32 h-32 md:w-40 md:h-40 mb-6 object-cover rounded-full" />
             <h3 className="text-xl font-bold text-white">Jenny</h3>
-            <p className="text-gray-400 mt-2">Game Designer</p>
           </div>
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center">
             <img src="/gallery/brian.jpg" alt="Brian - Composer" className="w-32 h-32 md:w-40 md:h-40 mb-6 object-cover rounded-full" />
             <h3 className="text-xl font-bold text-white">Brian</h3>
-            <p className="text-gray-400 mt-2">Composer</p>
           </div>
         </div>
       </section>
