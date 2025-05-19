@@ -22,14 +22,13 @@ export default function LeaderboardApply() {
 
     try {
       console.log('Starting form submission');
+      
+      // First, submit the form data without the file
       const submitData = new FormData();
       submitData.append('username', formData.username);
       submitData.append('email', formData.email);
       submitData.append('bestTime', formData.bestTime);
       submitData.append('level', formData.level);
-      if (proofFile) {
-        submitData.append('proof', proofFile);
-      }
 
       console.log('Sending request to API');
       const response = await fetch('/api/submit-application', {
@@ -50,6 +49,22 @@ export default function LeaderboardApply() {
         console.log('Response data:', data);
         
         if (data.success) {
+          // If there's a proof file, handle it separately
+          if (proofFile) {
+            const fileData = new FormData();
+            fileData.append('proof', proofFile);
+            fileData.append('email', formData.email); // Include email for reference
+
+            const fileResponse = await fetch('/api/upload-proof', {
+              method: 'POST',
+              body: fileData,
+            });
+
+            if (!fileResponse.ok) {
+              console.warn('File upload failed, but application was submitted');
+            }
+          }
+
           console.log('Submission successful');
           alert('Application submitted successfully!');
           router.push('/leaderboard');
