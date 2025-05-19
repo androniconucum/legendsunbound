@@ -29,66 +29,64 @@ export async function POST(request: Request) {
       );
     }
 
-    // Debug environment variables
-    console.log('Email config:', {
-      user: process.env.EMAIL_USER,
-      hasPassword: !!process.env.EMAIL_PASSWORD,
-      adminEmail: process.env.ADMIN_EMAIL
-    });
+    // Try to send email if configuration is available
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD && process.env.ADMIN_EMAIL) {
+      try {
+        console.log('Creating email transporter');
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+          debug: true,
+        });
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      console.error('Missing email configuration');
-      return NextResponse.json(
-        { success: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
+        console.log('Verifying transporter connection');
+        await transporter.verify();
+        console.log('Transporter verified successfully');
+
+        console.log('Preparing email content');
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: process.env.ADMIN_EMAIL,
+          subject: `New Leaderboard Application - Level ${level}`,
+          html: `
+            <h2>New Leaderboard Application</h2>
+            <p><strong>Username:</strong> ${username}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Level:</strong> ${level}</p>
+            <p><strong>Best Time:</strong> ${bestTime}</p>
+            <p><strong>Proof File:</strong> ${proof?.name}</p>
+            <p><strong>Note:</strong> The proof file was too large to attach. Please request the file directly from the applicant.</p>
+          `,
+        };
+
+        console.log('Sending email');
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info);
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        // Continue with the application submission even if email fails
+      }
+    } else {
+      console.log('Email configuration not available, skipping email notification');
     }
 
-    console.log('Creating email transporter');
-    // Create a transporter using SMTP
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      debug: true, // Enable debug logging
+    // Return success even if email sending failed
+    return NextResponse.json({ 
+      success: true,
+      message: 'Application submitted successfully'
     });
-
-    console.log('Verifying transporter connection');
-    // Verify the connection configuration
-    await transporter.verify();
-    console.log('Transporter verified successfully');
-
-    console.log('Preparing email content');
-    // Email content
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Leaderboard Application - Level ${level}`,
-      html: `
-        <h2>New Leaderboard Application</h2>
-        <p><strong>Username:</strong> ${username}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Level:</strong> ${level}</p>
-        <p><strong>Best Time:</strong> ${bestTime}</p>
-        <p><strong>Proof File:</strong> ${proof?.name}</p>
-        <p><strong>Note:</strong> The proof file was too large to attach. Please request the file directly from the applicant.</p>
-      `,
-    };
-
-    console.log('Sending email');
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info);
-
-    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Detailed error:', error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Failed to send application' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to submit application'
+      },
       { status: 500 }
     );
   }
