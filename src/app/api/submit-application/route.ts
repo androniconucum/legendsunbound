@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     if (!username || !email || !bestTime || !level) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { success: false, error: 'Missing required fields' },
         { status: 400 }
       );
     }
@@ -38,7 +38,10 @@ export async function POST(request: Request) {
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
       console.error('Missing email configuration');
-      throw new Error('Email configuration is missing');
+      return NextResponse.json(
+        { success: false, error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
     console.log('Creating email transporter');
@@ -85,7 +88,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Detailed error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to send application' },
+      { success: false, error: error instanceof Error ? error.message : 'Failed to send application' },
       { status: 500 }
     );
   }

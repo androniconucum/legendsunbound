@@ -38,16 +38,28 @@ export default function LeaderboardApply() {
       });
 
       console.log('Response received:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
+      
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit application');
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(errorText || 'Failed to submit application');
       }
 
-      console.log('Submission successful');
-      alert('Application submitted successfully!');
-      router.push('/leaderboard');
+      try {
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+          console.log('Submission successful');
+          alert('Application submitted successfully!');
+          router.push('/leaderboard');
+        } else {
+          throw new Error(data.error || 'Failed to submit application');
+        }
+      } catch (jsonError) {
+        console.error('JSON parsing error:', jsonError);
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
       console.error('Detailed error:', error);
       setError(error instanceof Error ? error.message : 'Failed to submit application. Please try again.');
