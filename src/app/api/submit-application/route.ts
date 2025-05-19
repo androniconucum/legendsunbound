@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function POST(request: Request) {
   console.log('API route started');
   try {
@@ -18,6 +24,13 @@ export async function POST(request: Request) {
     const bestTime = formData.get('bestTime');
     const level = formData.get('level');
     const proof = formData.get('proof') as File;
+
+    if (!username || !email || !bestTime || !level) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
 
     // Debug environment variables
     console.log('Email config:', {
